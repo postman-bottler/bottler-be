@@ -26,6 +26,11 @@ services:
       - redis_data:/data
     restart: always  # 재시작 정책 추가
     command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 volumes:
   redis_data:
