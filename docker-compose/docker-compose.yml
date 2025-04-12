@@ -25,6 +25,7 @@ services:
     volumes:
       - redis_data:/data
     restart: always  # 재시작 정책 추가
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
 
 volumes:
   redis_data:
