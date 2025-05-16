@@ -1,11 +1,9 @@
 package postman.bottler.keyword.application.service;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,8 +19,7 @@ public class AsyncRecommendationService {
     @Value("${recommendation.limit.candidate}")
     private int recommendationCandidateLimit;
 
-    @Async
-    public CompletableFuture<String> processRecommendationForUser(Long userId) {
+    public String processRecommendationForUser(Long userId) {
         log.info("사용자 [{}]의 추천 작업을 시작합니다.", userId);
 
         try {
@@ -38,10 +35,10 @@ public class AsyncRecommendationService {
             redisLetterService.saveTempRecommendations(userId, recommendedLetters);
 
             log.info("사용자 [{}]의 추천 작업이 성공적으로 완료되었습니다.", userId);
-            return CompletableFuture.completedFuture("Success: 사용자 [" + userId + "] 작업 완료");
+            return "Success: 사용자 [" + userId + "] 작업 완료";
         } catch (Exception e) {
             log.error("사용자 [{}]의 추천 작업 중 예기치 못한 예외 발생: {}", userId, e.getMessage(), e);
-            return CompletableFuture.completedFuture("Error: 사용자 [" + userId + "] 예외 발생");
+            return "Error: 사용자 [" + userId + "] 예외 발생";
         }
     }
 }
