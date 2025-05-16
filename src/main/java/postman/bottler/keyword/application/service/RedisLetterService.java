@@ -1,6 +1,7 @@
 package postman.bottler.keyword.application.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -85,13 +86,15 @@ public class RedisLetterService {
         List<Long> tempRecommendations = fetchTempRecommendations(userId);
         List<Long> activeRecommendations = fetchActiveRecommendations(userId);
 
-        return processRecommendations(userId, tempRecommendations, activeRecommendations).map(recommendId -> {
-            log.info("추천 편지 업데이트 완료: userId={}, 선택된 추천 편지 ID={}", userId, recommendId);
-            return createRecommendNotification(userId, recommendId);
-        }).or(() -> {
+        Optional<Long> recommendId = processRecommendations(userId, tempRecommendations, activeRecommendations);
+
+        if (recommendId.isEmpty()) {
             log.info("userId={}에 대한 유효한 추천이 없음. 추천을 건너뜁니다.", userId);
             return Optional.empty();
-        });
+        }
+
+        log.info("추천 편지 업데이트 완료: userId={}, 선택된 추천 편지 ID={}", userId, recommendId);
+        return Optional.of(createRecommendNotification(userId, recommendId.get()));
     }
 
     public void deleteRecentReply(Long receiverId, Long replyLetterId, String label) {
@@ -120,14 +123,15 @@ public class RedisLetterService {
 
     private List<Long> fetchRecommendations(String key) {
         List<Long> recommendations = redisTemplate.opsForValue().get(key);
-        validateRecommendations(recommendations);
-        return recommendations;
+        if (isExistRecommendations(recommendations)) {
+            return recommendations;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
-    private void validateRecommendations(List<Long> recommendations) {
-        if (recommendations == null || recommendations.isEmpty()) {
-            log.warn("추천 데이터가 없습니다.");
-        }
+    private boolean isExistRecommendations(List<Long> recommendations) {
+        return !(recommendations == null || recommendations.isEmpty());
     }
 
     private Optional<Long> processRecommendations(Long userId, List<Long> tempRecommendations,
