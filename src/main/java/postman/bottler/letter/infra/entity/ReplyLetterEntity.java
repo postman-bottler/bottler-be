@@ -5,7 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,7 +15,11 @@ import lombok.NoArgsConstructor;
 import postman.bottler.letter.domain.ReplyLetter;
 
 @Entity
-@Table(name = "reply_letters")
+@Table(
+        name = "reply_letters",
+        indexes = @Index(name = "idx_replyletter_isdeleted_id", columnList = ("isDeleted, id")),
+        uniqueConstraints = @UniqueConstraint(name = "uq_letter_sender", columnNames = {"letterId", "senderId"})
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReplyLetterEntity {
 
