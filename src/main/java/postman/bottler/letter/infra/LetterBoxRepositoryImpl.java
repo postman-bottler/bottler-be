@@ -12,6 +12,7 @@ import postman.bottler.letter.application.repository.LetterBoxRepository;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
+import postman.bottler.letter.infra.entity.LetterBoxEntity;
 
 @Slf4j
 @Repository
@@ -19,11 +20,11 @@ import postman.bottler.letter.domain.LetterType;
 public class LetterBoxRepositoryImpl implements LetterBoxRepository {
 
     private final LetterBoxQueryRepository letterBoxQueryRepository;
-    private final LetterBoxJdbcRepository letterBoxJdbcRepository;
+    private final LetterBoxJpaRepository letterBoxJpaRepository;
 
     @Override
     public void save(LetterBox letterBox) {
-        letterBoxJdbcRepository.save(letterBox);
+        letterBoxJpaRepository.save(LetterBoxEntity.from(letterBox));
     }
 
     @Override
@@ -56,8 +57,8 @@ public class LetterBoxRepositoryImpl implements LetterBoxRepository {
 
 
     @Override
-    public boolean existsByLetterIdAndUserId(Long letterId, Long userId) {
-        return letterBoxJdbcRepository.existsByUserIdAndLetterId(letterId, userId);
+    public boolean existsByUserIdAndLetterId(Long userId, Long letterId) {
+        return letterBoxJpaRepository.existsByUserIdAndLetterId(userId, letterId);
     }
 
     private long countLetters(Long userId, BoxType boxType) {

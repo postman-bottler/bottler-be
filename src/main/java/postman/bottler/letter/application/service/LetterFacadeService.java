@@ -34,8 +34,8 @@ public class LetterFacadeService {
     }
 
     @Transactional(readOnly = true)
-    public LetterDetailResponseDTO findLetterDetail(Long letterId, Long currentUserId) {
-        letterBoxService.validateLetterInUserBox(letterId, currentUserId);
+    public LetterDetailResponseDTO findLetterDetail(Long currentUserId, Long letterId) {
+        letterBoxService.validateLetterInUserBox(currentUserId, letterId);
         boolean isReplied = replyLetterService.checkIsReplied(letterId, currentUserId);
         List<LetterKeyword> keywords = letterKeywordService.getKeywords(letterId);
         String profile = userService.getProfileImageUrlById(currentUserId);

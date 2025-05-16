@@ -157,7 +157,7 @@ class LetterBoxRepositoryImplTest extends TestBase {
         when(jdbcRepository.existsByUserIdAndLetterId(101L, 1L)).thenReturn(true);
 
         // when
-        boolean exists = repository.existsByLetterIdAndUserId(101L, 1L);
+        boolean exists = repository.existsByUserIdAndLetterId(101L, 1L);
 
         // then
         assertThat(exists).isTrue();

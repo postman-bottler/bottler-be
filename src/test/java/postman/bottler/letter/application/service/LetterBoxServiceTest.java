@@ -204,7 +204,7 @@ class LetterBoxServiceTest extends TestBase {
     @DisplayName("사용자 권한 없는 편지 접근 시 UnauthorizedLetterAccessException 발생")
     void validateLetterInUserBoxUnauthorizedAccess() {
         // given
-        when(letterBoxRepository.existsByLetterIdAndUserId(101L, 1L)).thenReturn(false);
+        when(letterBoxRepository.existsByUserIdAndLetterId(101L, 1L)).thenReturn(false);
 
         // then
         assertThatThrownBy(() -> letterBoxService.validateLetterInUserBox(101L, 1L))
