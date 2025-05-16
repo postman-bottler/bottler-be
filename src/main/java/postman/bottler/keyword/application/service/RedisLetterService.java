@@ -85,13 +85,15 @@ public class RedisLetterService {
         List<Long> tempRecommendations = fetchTempRecommendations(userId);
         List<Long> activeRecommendations = fetchActiveRecommendations(userId);
 
-        return processRecommendations(userId, tempRecommendations, activeRecommendations).map(recommendId -> {
-            log.info("추천 편지 업데이트 완료: userId={}, 선택된 추천 편지 ID={}", userId, recommendId);
-            return createRecommendNotification(userId, recommendId);
-        }).or(() -> {
+        Optional<Long> recommendId = processRecommendations(userId, tempRecommendations, activeRecommendations);
+
+        if (recommendId.isEmpty()) {
             log.info("userId={}에 대한 유효한 추천이 없음. 추천을 건너뜁니다.", userId);
             return Optional.empty();
-        });
+        }
+
+        log.info("추천 편지 업데이트 완료: userId={}, 선택된 추천 편지 ID={}", userId, recommendId);
+        return Optional.of(createRecommendNotification(userId, recommendId.get()));
     }
 
     public void deleteRecentReply(Long receiverId, Long replyLetterId, String label) {
