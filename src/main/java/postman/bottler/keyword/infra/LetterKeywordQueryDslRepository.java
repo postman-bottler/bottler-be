@@ -1,8 +1,9 @@
 package postman.bottler.keyword.infra;
 
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import postman.bottler.keyword.infra.entity.LetterKeywordEntity;
@@ -50,14 +51,40 @@ public class LetterKeywordQueryDslRepository {
     private List<Long> getRandomLetters(int limit, List<Long> excludedLetterIds) {
         QLetterEntity qLetter = QLetterEntity.letterEntity;
 
-        return queryFactory
-                .select(qLetter.id)
+        Long maxId = queryFactory
+                .select(qLetter.id.max())
                 .from(qLetter)
-                .where(qLetter.id.notIn(excludedLetterIds)
-                        .and(qLetter.isDeleted.isFalse()))
-                .orderBy(Expressions.stringTemplate("function('RAND')").asc())
-                .limit(limit)
-                .fetch();
+                .where(qLetter.isDeleted.isFalse())
+                .fetchOne();
+
+        if (maxId == null || maxId == 0) {
+            return new ArrayList<>();
+        }
+
+        List<Long> result = new ArrayList<>();
+        Random random = new Random();
+        int tryCount = 0;
+
+        while (result.size() < limit && tryCount < 5) {
+            long randomId = 1L + random.nextLong(maxId); // 1 ~ maxId 사이에서 랜덤
+
+            List<Long> partial = queryFactory
+                    .select(qLetter.id)
+                    .from(qLetter)
+                    .where(
+                            qLetter.isDeleted.isFalse(),
+                            qLetter.id.goe(randomId),
+                            qLetter.id.notIn(excludedLetterIds)
+                    )
+                    .orderBy(qLetter.id.asc()) // 랜덤 시작점 이후 순차 탐색
+                    .limit(limit - result.size())
+                    .fetch();
+
+            result.addAll(partial);
+            tryCount++;
+        }
+
+        return result;
     }
 
     public List<String> getFrequentKeywords(List<Long> letterIds) {
