@@ -6,13 +6,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import postman.bottler.letter.domain.RecommendedLetter;
 
 @Entity
-@Table(name = "recommended_letter")
+@Table(
+        name = "recommended_letter",
+        uniqueConstraints = @UniqueConstraint(name = "uq_user_letter", columnNames = {"userId", "letterId"})
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecommendedLetterEntity {
 
