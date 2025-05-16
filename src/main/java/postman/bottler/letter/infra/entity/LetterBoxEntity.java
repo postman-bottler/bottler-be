@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -17,7 +18,11 @@ import postman.bottler.letter.domain.LetterBox;
 import postman.bottler.letter.domain.LetterType;
 
 @Entity
-@Table(name = "letter_box")
+@Table(
+        name = "letter_box",
+        indexes = @Index(name = "idx_letterbox_user_box_createdat",
+                columnList = "userId, boxType, createdAt DESC")
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LetterBoxEntity {
 
