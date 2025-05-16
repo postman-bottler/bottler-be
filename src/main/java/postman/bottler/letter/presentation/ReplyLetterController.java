@@ -64,7 +64,7 @@ public class ReplyLetterController {
                                                                                            BindingResult bindingResult,
                                                                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
-        letterBoxService.validateLetterInUserBox(letterId, userId);
+        letterBoxService.validateLetterInUserBox(userId, letterId);
         Page<ReplyLetterSummaryResponseDTO> result = letterReplyService.findReplyLetterSummaries(letterId,
                 pageRequestDTO, userId);
         return ApiResponse.onSuccess(PageResponseDTO.from(result));
@@ -75,7 +75,7 @@ public class ReplyLetterController {
     public ApiResponse<ReplyLetterDetailResponseDTO> getReplyLetter(@PathVariable Long replyLetterId,
                                                                     @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
-        letterBoxService.validateLetterInUserBox(replyLetterId, userId);
+        letterBoxService.validateLetterInUserBox(userId, replyLetterId);
         return ApiResponse.onSuccess(letterReplyService.findReplyLetterDetail(replyLetterId, userId));
     }
 

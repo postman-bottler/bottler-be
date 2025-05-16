@@ -50,7 +50,7 @@ public class LetterController {
     @GetMapping("/detail/{letterId}")
     public ApiResponse<LetterDetailResponseDTO> getLetterDetail(@PathVariable Long letterId,
                                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ApiResponse.onSuccess(letterFacadeService.findLetterDetail(letterId, userDetails.getUserId()));
+        return ApiResponse.onSuccess(letterFacadeService.findLetterDetail(userDetails.getUserId(), letterId));
     }
 
     @Operation(summary = "추천 키워드 편지 조회", description = "사용자에게 현재 추천된 키워드 편지들의 정보를 제공합니다.")

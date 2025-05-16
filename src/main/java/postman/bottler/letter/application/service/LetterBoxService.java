@@ -71,10 +71,10 @@ public class LetterBoxService {
         letterBoxRepository.deleteAllByBoxTypeForUser(userId, boxType);
     }
 
-    public void validateLetterInUserBox(Long letterId, Long userId) {
+    public void validateLetterInUserBox(Long userId, Long letterId) {
         log.debug("편지 보관함 권한 검증 요청: userId={}, letterId={}", userId, letterId);
 
-        boolean isLetterInUserBox = letterBoxRepository.existsByLetterIdAndUserId(letterId, userId);
+        boolean isLetterInUserBox = letterBoxRepository.existsByUserIdAndLetterId(userId, letterId);
         if (!isLetterInUserBox) {
             throw new UnauthorizedLetterAccessException();
         }

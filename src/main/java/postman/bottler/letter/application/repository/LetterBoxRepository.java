@@ -21,5 +21,5 @@ public interface LetterBoxRepository {
 
     void deleteAllByBoxTypeForUser(Long userId, BoxType boxType);
 
-    boolean existsByLetterIdAndUserId(Long letterId, Long userId);
+    boolean existsByUserIdAndLetterId(Long letterId, Long userId);
 }
