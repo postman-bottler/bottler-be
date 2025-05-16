@@ -5,14 +5,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import postman.bottler.keyword.domain.LetterKeyword;
 
 @Entity
-@Table(name = "letter_keyword")
+@Table(
+        name = "letter_keyword",
+        indexes = @Index(name = "idx_letterkeyword_keyword_isdeleted_letter",
+        columnList = "keyword, isDeleted, letterId"),
+        uniqueConstraints = @UniqueConstraint(name = "uq_letter_keyword", columnNames = {"letterId", "keyword"})
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LetterKeywordEntity {
 
