@@ -12,11 +12,14 @@ import postman.bottler.keyword.infra.entity.LetterKeywordEntity;
 public class LetterKeywordRepositoryImpl implements LetterKeywordRepository {
 
     private final LetterKeywordQueryDslRepository queryDslRepository;
-    private final LetterKeywordJdbcRepository jdbcRepository;
+    private final LetterKeywordJpaRepository jpaRepository;
 
     @Override
     public List<LetterKeyword> saveAll(List<LetterKeyword> letterKeywords) {
-        return jdbcRepository.batchInsertKeywords(letterKeywords);
+        return jpaRepository.saveAll(letterKeywords.stream().map(LetterKeywordEntity::from).toList())
+                .stream()
+                .map(LetterKeywordEntity::toDomain)
+                .toList();
     }
 
     @Override
@@ -31,7 +34,7 @@ public class LetterKeywordRepositoryImpl implements LetterKeywordRepository {
 
     @Override
     public void markKeywordsAsDeleted(List<Long> letterIds) {
-        jdbcRepository.batchUpdateIsDeleted(letterIds);
+        jpaRepository.updateIsDeleted(letterIds);
     }
 
     @Override
