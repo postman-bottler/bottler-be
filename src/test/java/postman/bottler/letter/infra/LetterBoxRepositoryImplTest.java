@@ -35,7 +35,7 @@ class LetterBoxRepositoryImplTest extends TestBase {
     private LetterBoxQueryRepository queryRepository;
 
     @Mock
-    private LetterBoxJdbcRepository jdbcRepository;
+//    private LetterBoxJdbcRepository jdbcRepository;
 
     private LetterSummaryResponseDTO summaryResponseDTO;
     private Pageable pageable;
@@ -154,7 +154,7 @@ class LetterBoxRepositoryImplTest extends TestBase {
     @DisplayName("특정 사용자와 편지의 존재 여부를 확인")
     void checkIfLetterExistsForUser() {
         // given
-        when(jdbcRepository.existsByUserIdAndLetterId(101L, 1L)).thenReturn(true);
+//        when(jdbcRepository.existsByUserIdAndLetterId(101L, 1L)).thenReturn(true);
 
         // when
         boolean exists = repository.existsByUserIdAndLetterId(101L, 1L);
