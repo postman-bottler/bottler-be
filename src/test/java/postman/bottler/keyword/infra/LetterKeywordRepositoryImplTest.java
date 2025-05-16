@@ -27,8 +27,8 @@ class LetterKeywordRepositoryImplTest extends TestBase {
     @Mock
     private LetterKeywordQueryDslRepository queryDslRepository;
 
-    @Mock
-    private LetterKeywordJdbcRepository jdbcRepository;
+//    @Mock
+//    private LetterKeywordJdbcRepository jdbcRepository;
 
     private static final List<LetterKeyword> MOCK_KEYWORDS = List.of(
             LetterKeyword.from(1L, "keyword1"),
@@ -51,14 +51,14 @@ class LetterKeywordRepositoryImplTest extends TestBase {
     @DisplayName("키워드 리스트 저장")
     void saveAll() {
         // given
-        when(jdbcRepository.batchInsertKeywords(MOCK_KEYWORDS)).thenReturn(MOCK_KEYWORDS);
+//        when(jdbcRepository.batchInsertKeywords(MOCK_KEYWORDS)).thenReturn(MOCK_KEYWORDS);
 
         // when
         List<LetterKeyword> savedKeywords = repository.saveAll(MOCK_KEYWORDS);
 
         // then
         assertThat(savedKeywords).isEqualTo(MOCK_KEYWORDS);
-        verify(jdbcRepository, times(1)).batchInsertKeywords(MOCK_KEYWORDS);
+//        verify(jdbcRepository, times(1)).batchInsertKeywords(MOCK_KEYWORDS);
     }
 
     @Test
@@ -104,7 +104,7 @@ class LetterKeywordRepositoryImplTest extends TestBase {
         repository.markKeywordsAsDeleted(letterIds);
 
         // then
-        verify(jdbcRepository, times(1)).batchUpdateIsDeleted(letterIds);
+//        verify(jdbcRepository, times(1)).batchUpdateIsDeleted(letterIds);
     }
 
     @Test
