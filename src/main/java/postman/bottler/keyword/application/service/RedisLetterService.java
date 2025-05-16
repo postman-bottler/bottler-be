@@ -1,6 +1,7 @@
 package postman.bottler.keyword.application.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -122,14 +123,15 @@ public class RedisLetterService {
 
     private List<Long> fetchRecommendations(String key) {
         List<Long> recommendations = redisTemplate.opsForValue().get(key);
-        validateRecommendations(recommendations);
-        return recommendations;
+        if (isExistRecommendations(recommendations)) {
+            return recommendations;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
-    private void validateRecommendations(List<Long> recommendations) {
-        if (recommendations == null || recommendations.isEmpty()) {
-            log.warn("추천 데이터가 없습니다.");
-        }
+    private boolean isExistRecommendations(List<Long> recommendations) {
+        return !(recommendations == null || recommendations.isEmpty());
     }
 
     private Optional<Long> processRecommendations(Long userId, List<Long> tempRecommendations,
