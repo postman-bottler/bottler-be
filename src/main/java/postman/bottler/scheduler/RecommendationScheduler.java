@@ -39,32 +39,35 @@ public class RecommendationScheduler {
 
         ExecutorService executorService = Executors.newFixedThreadPool(parallelism);
 
-        batches.forEach(batch -> CompletableFuture.runAsync(() -> {
-            log.info("사용자 배치 처리 시작 (크기: {}): {}", batch.size(), batch);
-
-            List<CompletableFuture<String>> futures = batch.stream()
-                    .map(asyncRecommendationService::processRecommendationForUser)
-                    .toList();
-
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-                    .thenRun(() -> futures.forEach(this::handleFutureResult))
-                    .exceptionally(ex -> {
-                        log.error("배치 처리 중 예외 발생: {}", ex.getMessage(), ex);
-                        return null;
-                    });
-
-            log.info("사용자 배치 처리 완료: {}", batch);
-        }, executorService));
-
-        executorService.shutdown();
         try {
-            if (!executorService.awaitTermination(30, TimeUnit.SECONDS)) {
-                log.warn("ExecutorService가 30초 내에 종료되지 않아 강제 종료합니다.");
-                executorService.shutdownNow();
+            for (List<Long> batch : batches) {
+                log.info("사용자 배치 처리 시작 (크기: {}): {}", batch.size(), batch);
+
+                List<CompletableFuture<String>> futures = batch.stream()
+                        .map(userId -> CompletableFuture.supplyAsync(
+                                () -> asyncRecommendationService.processRecommendationForUser(userId), executorService)
+                        ).toList();
+
+                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                        .thenRun(() -> futures.forEach(this::handleFutureResult))
+                        .exceptionally(ex -> {
+                            log.error("배치 처리 중 예외 발생: {}", ex.getMessage(), ex);
+                            return null;
+                        }).join();
+
+                log.info("사용자 배치 처리 완료: {}", batch);
             }
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-            log.error("ExecutorService 종료 중 인터럽트 발생: {}", ie.getMessage(), ie);
+        } finally {
+            executorService.shutdown();
+            try {
+                if (!executorService.awaitTermination(30, TimeUnit.SECONDS)) {
+                    log.warn("ExecutorService가 30초 내에 종료되지 않아 강제 종료합니다.");
+                    executorService.shutdownNow();
+                }
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                log.error("ExecutorService 종료 중 인터럽트 발생: {}", ie.getMessage(), ie);
+            }
         }
     }
 
