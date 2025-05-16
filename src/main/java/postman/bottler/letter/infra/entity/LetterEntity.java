@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -13,7 +14,10 @@ import lombok.NoArgsConstructor;
 import postman.bottler.letter.domain.Letter;
 
 @Entity
-@Table(name = "letters")
+@Table(
+        name = "letters",
+        indexes = @Index(name = "idx_letter_isdeleted_id", columnList = ("isDeleted, id"))
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LetterEntity {
 
