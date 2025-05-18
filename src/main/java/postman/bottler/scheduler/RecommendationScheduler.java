@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import postman.bottler.keyword.application.service.AsyncRecommendationService;
 import postman.bottler.keyword.application.service.RedisLetterService;
+import postman.bottler.letter.application.service.LetterService;
 import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
 import postman.bottler.notification.application.service.NotificationService;
 import postman.bottler.user.application.service.UserService;
@@ -26,6 +27,7 @@ public class RecommendationScheduler {
     private final UserService userService;
     private final RedisLetterService redisLetterService;
     private final NotificationService notificationService;
+    private final LetterService letterService;
 
     @Value("${scheduler.batch-size}")
     private int batchSize;
@@ -43,10 +45,9 @@ public class RecommendationScheduler {
             for (List<Long> batch : batches) {
                 log.info("사용자 배치 처리 시작 (크기: {}): {}", batch.size(), batch);
 
-                List<CompletableFuture<String>> futures = batch.stream()
-                        .map(userId -> CompletableFuture.supplyAsync(
-                                () -> asyncRecommendationService.processRecommendationForUser(userId), executorService)
-                        ).toList();
+                List<CompletableFuture<String>> futures = batch.stream().map(userId -> CompletableFuture.supplyAsync(
+                                () -> asyncRecommendationService.processRecommendationForUser(userId), executorService))
+                        .toList();
 
                 CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                         .thenRun(() -> futures.forEach(this::handleFutureResult))
@@ -71,7 +72,6 @@ public class RecommendationScheduler {
         }
     }
 
-
     public void updateAllRecommendations() {
         List<Long> userIds = userService.getAllUserIds();
         List<List<Long>> batches = createBatches(userIds);
@@ -79,8 +79,9 @@ public class RecommendationScheduler {
         List<RecommendNotificationRequestDTO> notifications = new ArrayList<>();
         for (List<Long> batch : batches) {
             batch.forEach(userId -> redisLetterService.updateRecommendationsFromTemp(userId)
-                    .ifPresent(notifications::add));
+                    .ifPresent(recommendId -> notifications.add(createRecommendNotification(userId, recommendId))));
         }
+
         if (!notifications.isEmpty()) {
             try {
                 notificationService.sendKeywordNotifications(notifications);
@@ -97,6 +98,10 @@ public class RecommendationScheduler {
             batches.add(items.subList(i, Math.min(items.size(), i + batchSize)));
         }
         return batches;
+    }
+
+    private RecommendNotificationRequestDTO createRecommendNotification(Long userId, Long recommendId) {
+        return RecommendNotificationRequestDTO.of(userId, recommendId, letterService.findLetter(recommendId).getLabel());
     }
 
     private void handleFutureResult(CompletableFuture<String> future) {
