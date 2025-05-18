@@ -10,14 +10,18 @@ import postman.bottler.keyword.domain.LetterKeyword;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.dto.ReceiverDTO;
 import postman.bottler.letter.application.dto.request.LetterRequestDTO;
+import postman.bottler.letter.application.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.application.dto.response.LetterResponseDTO;
 import postman.bottler.letter.application.repository.LetterBoxRepository;
 import postman.bottler.letter.application.repository.LetterRepository;
+import postman.bottler.letter.application.repository.ReplyLetterRepository;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.exception.LetterAuthorMismatchException;
 import postman.bottler.letter.exception.LetterNotFoundException;
+import postman.bottler.letter.exception.UnauthorizedLetterAccessException;
+import postman.bottler.user.application.repository.UserRepository;
 
 @Slf4j
 @Service
@@ -27,6 +31,8 @@ public class LetterService {
     private final LetterRepository letterRepository;
     private final LetterKeywordRepository letterKeywordRepository;
     private final LetterBoxRepository letterBoxRepository;
+    private final ReplyLetterRepository replyLetterRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
@@ -48,6 +54,22 @@ public class LetterService {
     @Transactional(readOnly = true)
     public Letter findLetter(Long letterId) {
         return letterRepository.findById(letterId).orElseThrow(() -> new LetterNotFoundException(LetterType.LETTER));
+    }
+
+    @Transactional(readOnly = true)
+    public LetterDetailResponseDTO findLetterDetail(Long userId, Long letterId) {
+        boolean isLetterInUserBox = letterBoxRepository.existsByUserIdAndLetterId(userId, letterId);
+        if (!isLetterInUserBox) {
+            throw new UnauthorizedLetterAccessException();
+        }
+
+        boolean isReplied = replyLetterRepository.existsByLetterIdAndSenderId(letterId, userId);
+        List<LetterKeyword> keywords = letterKeywordRepository.getKeywordsByLetterId(letterId);
+        String profile = userRepository.findById(userId).getImageUrl();
+        Letter letter = letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterNotFoundException(LetterType.LETTER));
+
+        return LetterDetailResponseDTO.from(letter, keywords, userId, profile, isReplied);
     }
 
     @Transactional(readOnly = true)
