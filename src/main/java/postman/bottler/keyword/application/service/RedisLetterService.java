@@ -14,11 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.dto.RecommendedLetterDTO;
 import postman.bottler.keyword.util.RedisLetterKeyUtil;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
+import postman.bottler.letter.application.repository.LetterRepository;
 import postman.bottler.letter.application.service.LetterBoxService;
-import postman.bottler.letter.application.service.LetterService;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.domain.LetterType;
+import postman.bottler.letter.exception.LetterNotFoundException;
 import postman.bottler.notification.application.dto.request.RecommendNotificationRequestDTO;
 import postman.bottler.reply.application.dto.ReplyType;
 
@@ -30,7 +31,7 @@ public class RedisLetterService {
     private final RedisTemplate<String, List<Long>> redisTemplate;
     private final RedisTemplate<String, Object> redisTemplateForReply;
     private final LetterBoxService letterBoxService;
-    private final LetterService letterService;
+    private final LetterRepository letterRepository;
     private final RecommendedLetterService recommendedLetterService;
 
     @Value("${recommendation.limit.active-recommendations}")
@@ -165,7 +166,7 @@ public class RedisLetterService {
     }
 
     private boolean isValidLetter(Long letterId) {
-        return letterService.existsLetterById(letterId);
+        return letterRepository.existsById(letterId);
     }
 
     private void updateActiveRecommendations(Long letterId, List<Long> activeRecommendations, String activeKey) {
@@ -194,7 +195,8 @@ public class RedisLetterService {
     }
 
     private RecommendNotificationRequestDTO createRecommendNotification(Long userId, Long recommendId) {
-        Letter letter = letterService.findLetter(recommendId);
+        Letter letter = letterRepository.findById(recommendId)
+                .orElseThrow(() -> new LetterNotFoundException(LetterType.LETTER));
         return RecommendNotificationRequestDTO.of(userId, recommendId, letter.getLabel());
     }
 }

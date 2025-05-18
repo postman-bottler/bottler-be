@@ -24,7 +24,7 @@ import postman.bottler.letter.application.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.application.dto.response.LetterRecommendSummaryResponseDTO;
 import postman.bottler.letter.application.dto.response.LetterResponseDTO;
 import postman.bottler.letter.application.service.LetterDeletionService;
-import postman.bottler.letter.application.service.LetterFacadeService;
+import postman.bottler.letter.application.service.LetterService;
 import postman.bottler.letter.presentation.annotation.LetterValidationMetaData;
 import postman.bottler.user.auth.CustomUserDetails;
 
@@ -35,7 +35,7 @@ import postman.bottler.user.auth.CustomUserDetails;
 public class LetterController {
 
     private final LetterDeletionService letterDeletionService;
-    private final LetterFacadeService letterFacadeService;
+    private final LetterService letterService;
 
     @Operation(summary = "키워드 편지 생성", description = "새로운 키워드 편지를 생성합니다.")
     @PostMapping
@@ -43,21 +43,21 @@ public class LetterController {
     public ApiResponse<LetterResponseDTO> createLetter(@RequestBody @Valid LetterRequestDTO letterRequestDTO,
                                                        BindingResult bindingResult,
                                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ApiResponse.onCreateSuccess(letterFacadeService.createLetter(letterRequestDTO, userDetails.getUserId()));
+        return ApiResponse.onCreateSuccess(letterService.createLetter(letterRequestDTO, userDetails.getUserId()));
     }
 
     @Operation(summary = "키워드 편지 상세 조회", description = "편지 ID로 키워드 편지의 상세 정보를 조회합니다.")
     @GetMapping("/detail/{letterId}")
     public ApiResponse<LetterDetailResponseDTO> getLetterDetail(@PathVariable Long letterId,
                                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ApiResponse.onSuccess(letterFacadeService.findLetterDetail(userDetails.getUserId(), letterId));
+        return ApiResponse.onSuccess(letterService.findLetterDetail(userDetails.getUserId(), letterId));
     }
 
     @Operation(summary = "추천 키워드 편지 조회", description = "사용자에게 현재 추천된 키워드 편지들의 정보를 제공합니다.")
     @GetMapping("/recommend")
     public ApiResponse<List<LetterRecommendSummaryResponseDTO>> getRecommendLetters(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ApiResponse.onSuccess(letterFacadeService.findRecommendHeaders(userDetails.getUserId()));
+        return ApiResponse.onSuccess(letterService.findRecommendHeaders(userDetails.getUserId()));
     }
 
     @Operation(summary = "키워드 편지 삭제", description = "키워드 편지ID, BoxType 송수신(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다.")
