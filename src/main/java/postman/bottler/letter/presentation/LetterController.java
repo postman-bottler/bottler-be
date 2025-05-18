@@ -25,6 +25,7 @@ import postman.bottler.letter.application.dto.response.LetterRecommendSummaryRes
 import postman.bottler.letter.application.dto.response.LetterResponseDTO;
 import postman.bottler.letter.application.service.LetterDeletionService;
 import postman.bottler.letter.application.service.LetterFacadeService;
+import postman.bottler.letter.application.service.LetterService;
 import postman.bottler.letter.presentation.annotation.LetterValidationMetaData;
 import postman.bottler.user.auth.CustomUserDetails;
 
@@ -36,6 +37,7 @@ public class LetterController {
 
     private final LetterDeletionService letterDeletionService;
     private final LetterFacadeService letterFacadeService;
+    private final LetterService letterService;
 
     @Operation(summary = "키워드 편지 생성", description = "새로운 키워드 편지를 생성합니다.")
     @PostMapping
@@ -43,7 +45,7 @@ public class LetterController {
     public ApiResponse<LetterResponseDTO> createLetter(@RequestBody @Valid LetterRequestDTO letterRequestDTO,
                                                        BindingResult bindingResult,
                                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ApiResponse.onCreateSuccess(letterFacadeService.createLetter(letterRequestDTO, userDetails.getUserId()));
+        return ApiResponse.onCreateSuccess(letterService.createLetter(letterRequestDTO, userDetails.getUserId()));
     }
 
     @Operation(summary = "키워드 편지 상세 조회", description = "편지 ID로 키워드 편지의 상세 정보를 조회합니다.")

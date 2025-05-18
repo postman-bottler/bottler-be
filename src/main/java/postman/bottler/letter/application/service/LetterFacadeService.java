@@ -7,10 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.service.LetterKeywordService;
 import postman.bottler.keyword.application.service.RedisLetterService;
 import postman.bottler.keyword.domain.LetterKeyword;
-import postman.bottler.letter.application.dto.request.LetterRequestDTO;
 import postman.bottler.letter.application.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.application.dto.response.LetterRecommendSummaryResponseDTO;
-import postman.bottler.letter.application.dto.response.LetterResponseDTO;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.user.application.service.UserService;
 
@@ -24,14 +22,6 @@ public class LetterFacadeService {
     private final RedisLetterService redisLetterService;
     private final UserService userService;
     private final ReplyLetterService replyLetterService;
-
-    @Transactional
-    public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
-        Letter letter = letterService.createLetter(letterRequestDTO, userId);
-        List<LetterKeyword> keywords = letterKeywordService.createLetterKeywords(letter.getId(),
-                letterRequestDTO.keywords());
-        return LetterResponseDTO.from(letter, keywords);
-    }
 
     @Transactional(readOnly = true)
     public LetterDetailResponseDTO findLetterDetail(Long currentUserId, Long letterId) {

@@ -5,9 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import postman.bottler.keyword.application.repository.LetterKeywordRepository;
+import postman.bottler.keyword.domain.LetterKeyword;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.dto.ReceiverDTO;
 import postman.bottler.letter.application.dto.request.LetterRequestDTO;
+import postman.bottler.letter.application.dto.response.LetterResponseDTO;
+import postman.bottler.letter.application.repository.LetterBoxRepository;
 import postman.bottler.letter.application.repository.LetterRepository;
 import postman.bottler.letter.domain.BoxType;
 import postman.bottler.letter.domain.Letter;
@@ -21,18 +25,24 @@ import postman.bottler.letter.exception.LetterNotFoundException;
 public class LetterService {
 
     private final LetterRepository letterRepository;
-    private final LetterBoxService letterBoxService;
+    private final LetterKeywordRepository letterKeywordRepository;
+    private final LetterBoxRepository letterBoxRepository;
 
     @Transactional
-    public Letter createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
-        log.info("편지 생성 요청: userId={}, title={}", userId, letterRequestDTO.title());
-
+    public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
         Letter letter = letterRequestDTO.toDomain(userId);
         Letter savedLetter = letterRepository.save(letter);
-        letterBoxService.saveLetter(LetterBoxDTO.of(userId, savedLetter.getId(), LetterType.LETTER, BoxType.SEND,
-                savedLetter.getCreatedAt()));
+        Long letterId = savedLetter.getId();
 
-        return savedLetter;
+        List<String> keywords = letterRequestDTO.keywords();
+        List<LetterKeyword> letterKeywords = keywords.stream().map(keyword -> LetterKeyword.from(letterId, keyword))
+                .toList();
+        letterKeywordRepository.saveAll(letterKeywords);
+
+        letterBoxRepository.save(LetterBoxDTO.of(userId, letterId, LetterType.LETTER, BoxType.SEND,
+                savedLetter.getCreatedAt()).toDomain());
+
+        return LetterResponseDTO.from(letter, letterKeywords);
     }
 
     @Transactional(readOnly = true)
