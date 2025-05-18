@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import postman.bottler.keyword.application.service.AsyncRecommendationService;
 import postman.bottler.keyword.application.service.RecommendedLetterService;
 import postman.bottler.keyword.application.service.RedisLetterService;
+import postman.bottler.scheduler.RecommendationScheduler;
 import postman.bottler.user.application.service.UserService;
 
 @Slf4j
@@ -24,7 +24,7 @@ import postman.bottler.user.application.service.UserService;
 @Tag(name = "테스트용")
 public class RecommendationController {
 
-    private final AsyncRecommendationService asyncRecommendationService;
+    private final RecommendationScheduler recommendationScheduler;
     private final RedisLetterService redisLetterService;
     private final UserService userService;
     private final RecommendedLetterService recommendedLetterService;
@@ -33,7 +33,7 @@ public class RecommendationController {
     @PostMapping("/process")
     public ResponseEntity<String> processRecommendation() {
         List<Long> userIds = userService.getAllUserIds();
-        userIds.forEach(asyncRecommendationService::processRecommendationForUser);
+        recommendationScheduler.processAllUserRecommendations();
         return ResponseEntity.ok("Recommendation process started for user " + userIds);
     }
 
