@@ -6,11 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.repository.LetterKeywordRepository;
+import postman.bottler.keyword.application.service.RedisLetterService;
 import postman.bottler.keyword.domain.LetterKeyword;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.dto.ReceiverDTO;
 import postman.bottler.letter.application.dto.request.LetterRequestDTO;
 import postman.bottler.letter.application.dto.response.LetterDetailResponseDTO;
+import postman.bottler.letter.application.dto.response.LetterRecommendSummaryResponseDTO;
 import postman.bottler.letter.application.dto.response.LetterResponseDTO;
 import postman.bottler.letter.application.repository.LetterBoxRepository;
 import postman.bottler.letter.application.repository.LetterRepository;
@@ -33,6 +35,7 @@ public class LetterService {
     private final LetterBoxRepository letterBoxRepository;
     private final ReplyLetterRepository replyLetterRepository;
     private final UserRepository userRepository;
+    private final RedisLetterService redisLetterService;
 
     @Transactional
     public LetterResponseDTO createLetter(LetterRequestDTO letterRequestDTO, Long userId) {
@@ -73,9 +76,12 @@ public class LetterService {
     }
 
     @Transactional(readOnly = true)
-    public List<Letter> findRecommendedLetters(List<Long> letterIds) {
-        return letterRepository.findAllByIds(letterIds);
+    public List<LetterRecommendSummaryResponseDTO> findRecommendHeaders(Long userId) {
+        List<Long> letterIds = redisLetterService.fetchActiveRecommendations(userId);
+        List<Letter> letters = letterRepository.findAllByIds(letterIds);
+        return letters.stream().map(LetterRecommendSummaryResponseDTO::from).toList();
     }
+
 
     @Transactional(readOnly = true)
     public ReceiverDTO findReceiverInfo(Long letterId) {

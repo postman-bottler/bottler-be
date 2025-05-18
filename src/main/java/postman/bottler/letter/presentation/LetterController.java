@@ -24,7 +24,6 @@ import postman.bottler.letter.application.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.application.dto.response.LetterRecommendSummaryResponseDTO;
 import postman.bottler.letter.application.dto.response.LetterResponseDTO;
 import postman.bottler.letter.application.service.LetterDeletionService;
-import postman.bottler.letter.application.service.LetterFacadeService;
 import postman.bottler.letter.application.service.LetterService;
 import postman.bottler.letter.presentation.annotation.LetterValidationMetaData;
 import postman.bottler.user.auth.CustomUserDetails;
@@ -36,7 +35,6 @@ import postman.bottler.user.auth.CustomUserDetails;
 public class LetterController {
 
     private final LetterDeletionService letterDeletionService;
-    private final LetterFacadeService letterFacadeService;
     private final LetterService letterService;
 
     @Operation(summary = "키워드 편지 생성", description = "새로운 키워드 편지를 생성합니다.")
@@ -59,7 +57,7 @@ public class LetterController {
     @GetMapping("/recommend")
     public ApiResponse<List<LetterRecommendSummaryResponseDTO>> getRecommendLetters(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ApiResponse.onSuccess(letterFacadeService.findRecommendHeaders(userDetails.getUserId()));
+        return ApiResponse.onSuccess(letterService.findRecommendHeaders(userDetails.getUserId()));
     }
 
     @Operation(summary = "키워드 편지 삭제", description = "키워드 편지ID, BoxType 송수신(SEND, RECEIVE)을 기반으로 키워드 편지를 삭제합니다.")
