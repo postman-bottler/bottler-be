@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import postman.bottler.keyword.application.repository.LetterKeywordRepository;
+import postman.bottler.letter.application.repository.LetterRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -12,11 +13,18 @@ import postman.bottler.keyword.application.repository.LetterKeywordRepository;
 public class RecommendService {
 
     private final LetterKeywordRepository letterKeywordRepository;
+    private final LetterRepository letterRepository;
 
     public List<Long> getRecommendedLetters(List<String> userKeywords, List<Long> letterIds, int limit) {
         log.debug("추천 편지 조회 요청: userKeywords={}, 제외할 letterIds={}, 추천 개수 limit={}", userKeywords, letterIds, limit);
 
         List<Long> recommendedLetters = letterKeywordRepository.getMatchedLetters(userKeywords, letterIds, limit);
+
+        if (recommendedLetters.size() < limit) {
+            int remaining = limit - recommendedLetters.size();
+            List<Long> randomLetters = letterRepository.getRandomIds(remaining, letterIds);
+            recommendedLetters.addAll(randomLetters);
+        }
 
         if (recommendedLetters.isEmpty()) {
             log.warn("추천할 편지가 없음: userKeywords={}", userKeywords);
