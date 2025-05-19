@@ -18,4 +18,6 @@ public interface LetterRepository {
     void softBlockById(Long letterId);
 
     boolean existsById(Long letterId);
+
+    List<Long> getRandomIds(int count, List<Long> excludedLetterIds);
 }

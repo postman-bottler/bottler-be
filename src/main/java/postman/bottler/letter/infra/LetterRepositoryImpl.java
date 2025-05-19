@@ -1,7 +1,9 @@
 package postman.bottler.letter.infra;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,5 +53,29 @@ public class LetterRepositoryImpl implements LetterRepository {
     @Override
     public boolean existsById(Long letterId) {
         return letterJpaRepository.existsById(letterId);
+    }
+
+    @Override
+    public List<Long> getRandomIds(int count, List<Long> excludedIds) {
+        Long maxId = letterJpaRepository.findMaxId();
+
+        if (maxId == null || maxId == 0) {
+            return new ArrayList<>();
+        }
+
+        List<Long> result = new ArrayList<>();
+        Random random = new Random();
+        int tryCount = 0;
+
+        while (result.size() < count && tryCount < 5) {
+            long randomId = 1L + random.nextLong(maxId); // 1 ~ maxId 사이에서 랜덤
+
+            List<Long> partial = letterJpaRepository.getRandomIds(count, randomId, excludedIds);
+
+            result.addAll(partial);
+            tryCount++;
+        }
+
+        return result;
     }
 }

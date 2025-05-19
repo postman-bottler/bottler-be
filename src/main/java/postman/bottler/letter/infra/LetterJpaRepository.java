@@ -28,4 +28,10 @@ public interface LetterJpaRepository extends JpaRepository<LetterEntity, Long> {
     @Modifying
     @Query("UPDATE LetterEntity l SET l.isBlocked = true, l.isDeleted = true WHERE l.id = :id")
     void softBlockById(Long id);
+
+    @Query("SELECT MAX(l.id) FROM LetterEntity l WHERE l.isDeleted = false")
+    Long findMaxId();
+
+    @Query("SELECT l.id FROM LetterEntity l WHERE l.isDeleted = false AND l.id >= :randomId AND l.id NOT IN :excludedIds ORDER BY l.id LIMIT :count")
+    List<Long> getRandomIds(int count, Long randomId, List<Long> excludedIds);
 }
