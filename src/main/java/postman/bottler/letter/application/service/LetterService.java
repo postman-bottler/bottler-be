@@ -9,7 +9,6 @@ import postman.bottler.keyword.application.repository.LetterKeywordRepository;
 import postman.bottler.keyword.application.service.RedisLetterService;
 import postman.bottler.keyword.domain.LetterKeyword;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
-import postman.bottler.letter.application.dto.ReceiverDTO;
 import postman.bottler.letter.application.dto.request.LetterRequestDTO;
 import postman.bottler.letter.application.dto.response.LetterDetailResponseDTO;
 import postman.bottler.letter.application.dto.response.LetterRecommendSummaryResponseDTO;
@@ -80,13 +79,6 @@ public class LetterService {
         List<Long> letterIds = redisLetterService.fetchActiveRecommendations(userId);
         List<Letter> letters = letterRepository.findAllByIds(letterIds);
         return letters.stream().map(LetterRecommendSummaryResponseDTO::from).toList();
-    }
-
-
-    @Transactional(readOnly = true)
-    public ReceiverDTO findReceiverInfo(Long letterId) {
-        Letter letter = findLetter(letterId);
-        return ReceiverDTO.from(letter);
     }
 
     @Transactional(readOnly = true)
