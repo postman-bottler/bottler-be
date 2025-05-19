@@ -17,9 +17,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import postman.bottler.TestBase;
-import postman.bottler.keyword.application.dto.response.FrequentKeywordsDTO;
-import postman.bottler.keyword.application.repository.LetterKeywordRepository;
-import postman.bottler.keyword.domain.LetterKeyword;
+import postman.bottler.letter.application.dto.response.FrequentKeywordsDTO;
+import postman.bottler.letter.application.repository.LetterKeywordRepository;
+import postman.bottler.letter.domain.LetterKeyword;
+import postman.bottler.letter.application.service.LetterKeywordService;
 import postman.bottler.letter.application.service.LetterService;
 
 @ActiveProfiles("test")

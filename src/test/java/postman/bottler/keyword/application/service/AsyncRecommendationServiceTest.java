@@ -13,7 +13,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import postman.bottler.TestBase;
+import postman.bottler.letter.application.service.AsyncRecommendationService;
 import postman.bottler.letter.application.service.LetterBoxService;
+import postman.bottler.letter.application.service.RecommendService;
+import postman.bottler.letter.application.service.RedisLetterService;
+import postman.bottler.letter.application.service.UserKeywordService;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")

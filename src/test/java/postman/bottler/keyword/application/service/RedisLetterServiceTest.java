@@ -23,10 +23,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.ActiveProfiles;
 import postman.bottler.TestBase;
-import postman.bottler.keyword.util.RedisLetterKeyUtil;
+import postman.bottler.letter.utiil.RedisLetterKeyUtil;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.service.LetterBoxService;
 import postman.bottler.letter.application.service.LetterService;
+import postman.bottler.letter.application.service.RedisLetterService;
 import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.exception.LetterNotFoundException;
 

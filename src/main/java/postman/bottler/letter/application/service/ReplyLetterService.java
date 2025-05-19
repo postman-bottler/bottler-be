@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.keyword.application.service.RedisLetterService;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.dto.ReceiverDTO;
 import postman.bottler.letter.application.dto.request.PageRequestDTO;

@@ -10,8 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import postman.bottler.TestBase;
-import postman.bottler.keyword.domain.UserKeyword;
-import postman.bottler.keyword.infra.entity.UserKeywordEntity;
+import postman.bottler.letter.domain.UserKeyword;
+import postman.bottler.letter.infra.entity.UserKeywordEntity;
+import postman.bottler.letter.infra.UserKeywordJpaRepository;
 
 @DataJpaTest
 @ActiveProfiles("test")

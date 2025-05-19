@@ -17,7 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import postman.bottler.TestBase;
-import postman.bottler.keyword.application.repository.LetterKeywordRepository;
+import postman.bottler.letter.application.repository.LetterKeywordRepository;
+import postman.bottler.letter.application.service.RecommendService;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)

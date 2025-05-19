@@ -15,8 +15,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import postman.bottler.TestBase;
-import postman.bottler.keyword.domain.UserKeyword;
-import postman.bottler.keyword.infra.entity.UserKeywordEntity;
+import postman.bottler.letter.domain.UserKeyword;
+import postman.bottler.letter.infra.entity.UserKeywordEntity;
+import postman.bottler.letter.infra.UserKeywordJdbcRepository;
+import postman.bottler.letter.infra.UserKeywordJpaRepository;
+import postman.bottler.letter.infra.UserKeywordRepositoryImpl;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
