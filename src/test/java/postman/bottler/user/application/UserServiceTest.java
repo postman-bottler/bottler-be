@@ -20,11 +20,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import postman.bottler.keyword.application.service.RedisLetterService;
+import postman.bottler.letter.application.service.RedisLetterService;
 import postman.bottler.letter.application.dto.LetterBoxDTO;
 import postman.bottler.letter.application.service.LetterBoxService;
 import postman.bottler.notification.application.service.NotificationService;
-import postman.bottler.notification.domain.NotificationType;
 import postman.bottler.slack.SlackConstant;
 import postman.bottler.slack.SlackService;
 import postman.bottler.user.application.dto.response.AccessTokenResponseDTO;

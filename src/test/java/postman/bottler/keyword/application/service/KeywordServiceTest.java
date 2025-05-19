@@ -14,10 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import postman.bottler.TestBase;
-import postman.bottler.keyword.application.dto.response.KeywordResponseDTO;
-import postman.bottler.keyword.application.dto.response.KeywordResponseDTO.CategoryKeywordsDTO;
-import postman.bottler.keyword.application.repository.KeywordRepository;
-import postman.bottler.keyword.domain.Keyword;
+import postman.bottler.letter.application.dto.response.KeywordResponseDTO;
+import postman.bottler.letter.application.dto.response.KeywordResponseDTO.CategoryKeywordsDTO;
+import postman.bottler.letter.application.repository.KeywordRepository;
+import postman.bottler.letter.domain.Keyword;
+import postman.bottler.letter.application.service.KeywordService;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")

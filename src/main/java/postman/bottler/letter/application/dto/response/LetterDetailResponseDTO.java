@@ -2,7 +2,7 @@ package postman.bottler.letter.application.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import postman.bottler.keyword.domain.LetterKeyword;
+import postman.bottler.letter.domain.LetterKeyword;
 import postman.bottler.letter.domain.Letter;
 
 public record LetterDetailResponseDTO(

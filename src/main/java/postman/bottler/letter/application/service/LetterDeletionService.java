@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import postman.bottler.keyword.application.service.LetterKeywordService;
 import postman.bottler.letter.application.dto.LetterDeleteDTO;
 import postman.bottler.letter.application.dto.LetterDeleteRequests;
 import postman.bottler.letter.application.service.deleter.BoxTypeDeleter;

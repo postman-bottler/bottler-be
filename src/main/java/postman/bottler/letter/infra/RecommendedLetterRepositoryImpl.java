@@ -3,7 +3,7 @@ package postman.bottler.letter.infra;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import postman.bottler.keyword.application.repository.RecommendedLetterRepository;
+import postman.bottler.letter.application.repository.RecommendedLetterRepository;
 import postman.bottler.letter.domain.RecommendedLetter;
 import postman.bottler.letter.infra.entity.RecommendedLetterEntity;
 

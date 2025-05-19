@@ -11,7 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import postman.bottler.TestBase;
-import postman.bottler.keyword.domain.UserKeyword;
+import postman.bottler.letter.domain.UserKeyword;
+import postman.bottler.letter.infra.UserKeywordJdbcRepository;
 
 @SpringBootTest
 @ActiveProfiles("test")
