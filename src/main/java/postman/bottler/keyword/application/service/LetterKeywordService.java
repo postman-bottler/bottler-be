@@ -10,7 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import postman.bottler.keyword.application.dto.response.FrequentKeywordsDTO;
 import postman.bottler.keyword.application.repository.LetterKeywordRepository;
 import postman.bottler.keyword.domain.LetterKeyword;
-import postman.bottler.letter.application.service.LetterService;
+import postman.bottler.letter.application.repository.LetterRepository;
+import postman.bottler.letter.domain.Letter;
 
 @Slf4j
 @Service
@@ -18,7 +19,7 @@ import postman.bottler.letter.application.service.LetterService;
 public class LetterKeywordService {
 
     private final LetterKeywordRepository letterKeywordRepository;
-    private final LetterService letterService;
+    private final LetterRepository letterRepository;
 
     @Transactional
     public List<LetterKeyword> createLetterKeywords(Long letterId, List<String> keywords) {
@@ -44,7 +45,7 @@ public class LetterKeywordService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public FrequentKeywordsDTO getTopFrequentKeywords(Long userId) {
-        List<Long> letterIds = letterService.findIdsByUserId(userId);
+        List<Long> letterIds = letterRepository.findAllByUserId(userId).stream().map(Letter::getId).toList();
         if (letterIds.isEmpty()) {
             log.warn("사용자의 편지 ID가 없음: userId={}", userId);
             return FrequentKeywordsDTO.from(Collections.emptyList());
