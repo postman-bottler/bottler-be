@@ -16,8 +16,11 @@ import postman.bottler.letter.application.dto.request.ReplyLetterRequestDTO;
 import postman.bottler.letter.application.dto.response.ReplyLetterDetailResponseDTO;
 import postman.bottler.letter.application.dto.response.ReplyLetterResponseDTO;
 import postman.bottler.letter.application.dto.response.ReplyLetterSummaryResponseDTO;
+import postman.bottler.letter.application.repository.LetterBoxRepository;
+import postman.bottler.letter.application.repository.LetterRepository;
 import postman.bottler.letter.application.repository.ReplyLetterRepository;
 import postman.bottler.letter.domain.BoxType;
+import postman.bottler.letter.domain.Letter;
 import postman.bottler.letter.domain.LetterType;
 import postman.bottler.letter.domain.ReplyLetter;
 import postman.bottler.letter.exception.DuplicateReplyLetterException;
@@ -32,8 +35,8 @@ import postman.bottler.notification.application.service.NotificationService;
 public class ReplyLetterService {
 
     private final ReplyLetterRepository replyLetterRepository;
-    private final LetterService letterService;
-    private final LetterBoxService letterBoxService;
+    private final LetterRepository letterRepository;
+    private final LetterBoxRepository letterBoxRepository;
     private final NotificationService notificationService;
     private final RedisLetterService redisLetterService;
 
@@ -101,7 +104,10 @@ public class ReplyLetterService {
     }
 
     private ReplyLetter saveReplyLetter(Long letterId, ReplyLetterRequestDTO requestDTO, Long senderId) {
-        ReceiverDTO receiverInfo = letterService.findReceiverInfo(letterId);
+        Letter letter = letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterNotFoundException(LetterType.LETTER));
+        ReceiverDTO receiverInfo = ReceiverDTO.from(letter);
+
         String title = formatReplyTitle(receiverInfo.title());
 
         return replyLetterRepository.save(requestDTO.toDomain(title, letterId, receiverInfo.receiverId(), senderId));
@@ -123,8 +129,8 @@ public class ReplyLetterService {
     }
 
     private void saveLetterToBox(Long userId, ReplyLetter replyLetter, BoxType boxType) {
-        letterBoxService.saveLetter(LetterBoxDTO.of(userId, replyLetter.getId(), LetterType.REPLY_LETTER, boxType,
-                replyLetter.getCreatedAt()));
+        letterBoxRepository.save(LetterBoxDTO.of(userId, replyLetter.getId(), LetterType.REPLY_LETTER, boxType,
+                replyLetter.getCreatedAt()).toDomain());
     }
 
     private void sendReplyNotification(ReplyLetter replyLetter) {
