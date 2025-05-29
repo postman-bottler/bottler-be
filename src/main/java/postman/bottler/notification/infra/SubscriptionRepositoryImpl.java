@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import postman.bottler.notification.application.repository.SubscriptionRepository;
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.domain.Subscriptions;
+import postman.bottler.notification.domain.Device;
 import postman.bottler.notification.infra.entity.SubscriptionEntity;
 
 @Repository
@@ -46,7 +47,7 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
     }
 
     @Override
-    public Boolean isDuplicate(Subscription subscription) {
-        return repository.existsByUserIdAndToken(subscription.getUserId(), subscription.getToken());
+    public Boolean isDuplicate(Device device) {
+        return repository.existsByUserIdAndToken(device.getUserId(), device.getToken());
     }
 }

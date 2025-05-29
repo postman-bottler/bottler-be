@@ -27,4 +27,8 @@ public class Subscriptions {
     public Boolean isPushEnabled() {
         return subscriptions != null && !subscriptions.isEmpty();
     }
+
+    public Boolean isEmpty() {
+        return subscriptions == null || subscriptions.isEmpty();
+    }
 }

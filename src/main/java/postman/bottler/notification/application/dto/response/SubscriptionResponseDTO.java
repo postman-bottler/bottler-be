@@ -6,6 +6,6 @@ public record SubscriptionResponseDTO(
         long userId
 ) {
     public static SubscriptionResponseDTO from(Subscription subscription) {
-        return new SubscriptionResponseDTO(subscription.getUserId());
+        return new SubscriptionResponseDTO(subscription.getDevice().getUserId());
     }
 }

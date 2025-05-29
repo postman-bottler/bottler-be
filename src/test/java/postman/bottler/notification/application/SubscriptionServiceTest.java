@@ -12,8 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import postman.bottler.notification.application.repository.SubscriptionRepository;
+import postman.bottler.notification.application.service.SubscriptionReader;
 import postman.bottler.notification.application.service.SubscriptionService;
+import postman.bottler.notification.application.service.SubscriptionWriter;
+import postman.bottler.notification.domain.Device;
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.application.dto.response.SubscriptionResponseDTO;
 
@@ -24,19 +26,23 @@ public class SubscriptionServiceTest {
     private SubscriptionService subscriptionService;
 
     @Mock
-    private SubscriptionRepository subscriptionRepository;
+    private SubscriptionReader subscriptionReader;
+    @Mock
+    private SubscriptionWriter subscriptionWriter;
 
     @Test
     @DisplayName("알림 구독을 허용한다.")
     public void subscribe() {
         // GIVEN
-        when(subscriptionRepository.save(any())).thenReturn(Subscription.create(1L, "token"));
+        when(subscriptionWriter.writeThrough(any())).thenReturn(Subscription.create(1L, "token"));
 
         // WHEN
         SubscriptionResponseDTO response = subscriptionService.subscribe(1L, "token");
 
         // THEN
         assertThat(response.userId()).isEqualTo(1L);
+        verify(subscriptionReader, times(1)).isSubscribed(any(Device.class));
+        verify(subscriptionWriter, times(1)).writeThrough(any());
     }
 
     @Test
@@ -49,19 +55,20 @@ public class SubscriptionServiceTest {
         subscriptionService.unsubscribeAll(userId);
 
         // THEN
-        verify(subscriptionRepository, times(1)).deleteAllByUserId(userId);
+        verify(subscriptionWriter, times(1)).deleteAll(userId);
     }
 
     @Test
     @DisplayName("특정 기기의 알림을 비허용한다.")
     public void unsubscribe() {
         // GIVEN
+        Long userId = 1L;
         String token = "token";
 
         // WHEN
-        subscriptionService.unsubscribe(token);
+        subscriptionService.unsubscribe(token, userId);
 
         // THEN
-        verify(subscriptionRepository, times(1)).deleteByToken(token);
+        verify(subscriptionWriter, times(1)).deleteDevice(new Device(userId, token));
     }
 }
