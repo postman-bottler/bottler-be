@@ -16,13 +16,13 @@ import java.util.List;
 public class RedisSubscriptionCache implements SubscriptionCache {
 
     private final static String SUBSCRIPTION_KEY = "subscription:";
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> subscriptionTemplate;
 
     @Override
     public Subscriptions findByUserId(Long userId) {
         List<Subscription> subscriptions = new ArrayList<>();
         String key = getKey(userId);
-        List<String> tokens = redisTemplate.opsForList().range(key, 0, -1);
+        List<String> tokens = subscriptionTemplate.opsForList().range(key, 0, -1);
         for (String token : tokens) {
             subscriptions.add(Subscription.create(userId, token));
         }
@@ -32,18 +32,18 @@ public class RedisSubscriptionCache implements SubscriptionCache {
     @Override
     public void save(Device device) {
         String key = getKey(device.getUserId());
-        redisTemplate.opsForList().rightPush(key, device.getToken());
+        subscriptionTemplate.opsForList().rightPush(key, device.getToken());
     }
 
     @Override
     public void deleteAllByUserId(Long userId) {
-        redisTemplate.delete(getKey(userId));
+        subscriptionTemplate.delete(getKey(userId));
     }
 
     @Override
     public void deleteDevice(Device device) {
         String key = getKey(device.getUserId());
-        redisTemplate.opsForList().remove(key, 0, device.getToken());
+        subscriptionTemplate.opsForList().remove(key, 0, device.getToken());
     }
 
     private String getKey(Long userId) {

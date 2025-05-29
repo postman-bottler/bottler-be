@@ -12,9 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import postman.bottler.notification.application.repository.SubscriptionCache;
-import postman.bottler.notification.application.repository.SubscriptionRepository;
+import postman.bottler.notification.application.service.SubscriptionReader;
 import postman.bottler.notification.application.service.SubscriptionService;
+import postman.bottler.notification.application.service.SubscriptionWriter;
 import postman.bottler.notification.domain.Device;
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.application.dto.response.SubscriptionResponseDTO;
@@ -26,22 +26,23 @@ public class SubscriptionServiceTest {
     private SubscriptionService subscriptionService;
 
     @Mock
-    private SubscriptionRepository subscriptionRepository;
+    private SubscriptionReader subscriptionReader;
     @Mock
-    private SubscriptionCache subscriptionCache;
+    private SubscriptionWriter subscriptionWriter;
 
     @Test
     @DisplayName("알림 구독을 허용한다.")
     public void subscribe() {
         // GIVEN
-        when(subscriptionRepository.save(any())).thenReturn(Subscription.create(1L, "token"));
+        when(subscriptionWriter.writeThrough(any())).thenReturn(Subscription.create(1L, "token"));
 
         // WHEN
         SubscriptionResponseDTO response = subscriptionService.subscribe(1L, "token");
 
         // THEN
         assertThat(response.userId()).isEqualTo(1L);
-        verify(subscriptionCache, times(1)).save(any());
+        verify(subscriptionReader, times(1)).isSubscribed(any(Device.class));
+        verify(subscriptionWriter, times(1)).writeThrough(any());
     }
 
     @Test
@@ -54,8 +55,7 @@ public class SubscriptionServiceTest {
         subscriptionService.unsubscribeAll(userId);
 
         // THEN
-        verify(subscriptionRepository, times(1)).deleteAllByUserId(userId);
-        verify(subscriptionCache, times(1)).deleteAllByUserId(userId);
+        verify(subscriptionWriter, times(1)).deleteAll(userId);
     }
 
     @Test
@@ -69,7 +69,6 @@ public class SubscriptionServiceTest {
         subscriptionService.unsubscribe(token, userId);
 
         // THEN
-        verify(subscriptionRepository, times(1)).deleteByToken(token);
-        verify(subscriptionCache, times(1)).deleteDevice(new Device(userId, token));
+        verify(subscriptionWriter, times(1)).deleteDevice(new Device(userId, token));
     }
 }

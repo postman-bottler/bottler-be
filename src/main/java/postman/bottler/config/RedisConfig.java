@@ -42,7 +42,7 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, String> redisStringTemplate() {
+    public RedisTemplate<String, String> subscriptionTemplate() {
         RedisTemplate<String, String> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
 
