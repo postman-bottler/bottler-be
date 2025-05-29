@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import postman.bottler.notification.domain.Subscription;
-import postman.bottler.notification.domain.UserDevice;
+import postman.bottler.notification.domain.Device;
 
 @Entity
 @Table(name = "subscription")
@@ -29,15 +29,15 @@ public class SubscriptionEntity {
     public static SubscriptionEntity from(Subscription subscription) {
         return SubscriptionEntity.builder()
                 .id(subscription.getId())
-                .userId(subscription.getUserDevice().getUserId())
-                .token(subscription.getUserDevice().getToken())
+                .userId(subscription.getDevice().getUserId())
+                .token(subscription.getDevice().getToken())
                 .build();
     }
 
     public Subscription toDomain() {
         return Subscription.builder()
                 .id(id)
-                .userDevice(new UserDevice(userId, token))
+                .device(new Device(userId, token))
                 .build();
     }
 }

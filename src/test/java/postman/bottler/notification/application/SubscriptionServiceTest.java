@@ -12,8 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import postman.bottler.notification.application.repository.SubscriptionCache;
 import postman.bottler.notification.application.repository.SubscriptionRepository;
 import postman.bottler.notification.application.service.SubscriptionService;
+import postman.bottler.notification.domain.Device;
 import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.application.dto.response.SubscriptionResponseDTO;
 
@@ -25,6 +27,8 @@ public class SubscriptionServiceTest {
 
     @Mock
     private SubscriptionRepository subscriptionRepository;
+    @Mock
+    private SubscriptionCache subscriptionCache;
 
     @Test
     @DisplayName("알림 구독을 허용한다.")
@@ -37,6 +41,7 @@ public class SubscriptionServiceTest {
 
         // THEN
         assertThat(response.userId()).isEqualTo(1L);
+        verify(subscriptionCache, times(1)).save(any());
     }
 
     @Test
@@ -50,18 +55,21 @@ public class SubscriptionServiceTest {
 
         // THEN
         verify(subscriptionRepository, times(1)).deleteAllByUserId(userId);
+        verify(subscriptionCache, times(1)).deleteAllByUserId(userId);
     }
 
     @Test
     @DisplayName("특정 기기의 알림을 비허용한다.")
     public void unsubscribe() {
         // GIVEN
+        Long userId = 1L;
         String token = "token";
 
         // WHEN
-        subscriptionService.unsubscribe(token);
+        subscriptionService.unsubscribe(token, userId);
 
         // THEN
         verify(subscriptionRepository, times(1)).deleteByToken(token);
+        verify(subscriptionCache, times(1)).deleteDevice(new Device(userId, token));
     }
 }

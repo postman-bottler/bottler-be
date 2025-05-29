@@ -1,19 +1,16 @@
 package postman.bottler.notification.application.repository;
 
-import postman.bottler.notification.domain.Subscription;
 import postman.bottler.notification.domain.Subscriptions;
 import postman.bottler.notification.domain.Device;
 
-public interface SubscriptionRepository {
-    Subscription save(Subscription subscription);
+public interface SubscriptionCache {
 
     Subscriptions findByUserId(Long userId);
 
-    Subscriptions findAll();
+    void save(Device userDevice);
 
     void deleteAllByUserId(Long userId);
 
-    void deleteByToken(String token);
+    void deleteDevice(Device device);
 
-    Boolean isDuplicate(Device device);
 }
