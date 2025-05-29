@@ -22,7 +22,7 @@ class SubscriptionsTest {
 
         // then
         assertThat(subscriptions.getSubscriptions()).hasSize(2)
-                .extracting("userId", "token")
+                .extracting("userDevice.userId", "userDevice.token")
                 .containsExactlyInAnyOrder(
                         tuple(1L, "token1"),
                         tuple(1L, "token2")

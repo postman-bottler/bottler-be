@@ -20,8 +20,8 @@ public class SubscriptionTest {
         Subscription subscription = Subscription.create(userId, token);
 
         // then
-        assertThat(subscription.getUserId()).isEqualTo(1L);
-        assertThat(subscription.getToken()).isEqualTo("token");
+        assertThat(subscription.getUserDevice().getUserId()).isEqualTo(1L);
+        assertThat(subscription.getUserDevice().getToken()).isEqualTo("token");
     }
 
     @DisplayName("알림을 보낼 메시지를 생성한다.")

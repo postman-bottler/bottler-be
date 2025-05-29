@@ -16,7 +16,7 @@ public class SubscriptionService {
     @Transactional
     public SubscriptionResponseDTO subscribe(Long userId, String token) {
         Subscription subscribe = Subscription.create(userId, token);
-        if (subscriptionRepository.isDuplicate(subscribe)) {
+        if (subscriptionRepository.isDuplicate(subscribe.getUserDevice())) {
             throw new DuplicateTokenException();
         }
         Subscription save = subscriptionRepository.save(subscribe);

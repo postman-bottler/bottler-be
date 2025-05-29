@@ -8,20 +8,17 @@ import lombok.Getter;
 public class Subscription {
     private Long id;
 
-    private Long userId;
-
-    private String token;
+    private UserDevice userDevice;
 
     public static Subscription create(Long userId, String token) {
         return Subscription.builder()
-                .userId(userId)
-                .token(token)
+                .userDevice(new UserDevice(userId, token))
                 .build();
     }
 
     public PushMessage makeMessage(NotificationType type) {
         return PushMessage.builder()
-                .token(token)
+                .token(userDevice.getToken())
                 .title(type.getTitle())
                 .content(type.getContent())
                 .build();

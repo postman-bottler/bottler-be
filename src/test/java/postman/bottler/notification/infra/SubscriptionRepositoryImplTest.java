@@ -29,8 +29,8 @@ class SubscriptionRepositoryImplTest {
         Subscription save = subscriptionRepository.save(subscription);
 
         // then
-        assertThat(save.getUserId()).isEqualTo(1L);
-        assertThat(save.getToken()).isEqualTo("token");
+        assertThat(save.getUserDevice().getUserId()).isEqualTo(1L);
+        assertThat(save.getUserDevice().getToken()).isEqualTo("token");
         assertThat(save.getId()).isNotNull();
     }
 
@@ -49,7 +49,7 @@ class SubscriptionRepositoryImplTest {
 
         // then
         assertThat(subscriptions.getSubscriptions()).hasSize(2)
-                .extracting("userId", "token")
+                .extracting("userDevice.userId", "userDevice.token")
                 .containsExactlyInAnyOrder(
                         tuple(1L, "token1"),
                         tuple(1L, "token2")
@@ -83,7 +83,7 @@ class SubscriptionRepositoryImplTest {
 
         // then
         assertThat(subscriptions.getSubscriptions()).hasSize(2)
-                .extracting("userId", "token")
+                .extracting("userDevice.userId", "userDevice.token")
                 .containsExactlyInAnyOrder(
                         tuple(1L, "token1"),
                         tuple(2L, "token2")
@@ -122,7 +122,7 @@ class SubscriptionRepositoryImplTest {
         // then
         Subscriptions subscriptions = subscriptionRepository.findByUserId(1L);
         assertThat(subscriptions.getSubscriptions()).hasSize(1)
-                .extracting("userId", "token")
+                .extracting("userDevice.userId", "userDevice.token")
                 .containsExactlyInAnyOrder(tuple(1L, "token2"));
     }
 
@@ -135,7 +135,7 @@ class SubscriptionRepositoryImplTest {
         subscriptionRepository.save(subscription);
 
         // when
-        Boolean result = subscriptionRepository.isDuplicate(duplicateSubscription);
+        Boolean result = subscriptionRepository.isDuplicate(subscription.getUserDevice());
 
         // then
         assertThat(result).isTrue();
@@ -150,7 +150,7 @@ class SubscriptionRepositoryImplTest {
         subscriptionRepository.save(subscription);
 
         // when
-        Boolean result = subscriptionRepository.isDuplicate(notDuplicateSubscription);
+        Boolean result = subscriptionRepository.isDuplicate(notDuplicateSubscription.getUserDevice());
 
         // then
         assertThat(result).isFalse();
